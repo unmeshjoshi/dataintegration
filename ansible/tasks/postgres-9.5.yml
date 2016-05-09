@@ -11,7 +11,7 @@
 
 - apt: name=libpq-dev
 
-- apt: name=postgresql-9.5
+- apt: name=postgresql-9.5 force=yes 
 
 - name: update /etc/postgresql/9.5/main/pg_hba.conf  for replication
   blockinfile:
