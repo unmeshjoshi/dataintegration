@@ -1,0 +1,37 @@
+- name: Check if avro-c installed
+  stat: path=/usr/local/lib/libavro.so.23.0.0
+  register: avroc_installed
+
+- name: Get avro-c
+  command: curl -L  -H 'Cookie:oraclelicense=accept-securebackup-cookie' -o /tmp/avro-c-1.8.0.tar.gz  http://redrockdigimark.com/apachemirror/avro/avro-1.8.0/c/avro-c-1.8.0.tar.gz
+  when: avroc_installed.stat.exists == False
+
+- name: Explode avro-c tar
+  unarchive: src=/tmp/avro-c-1.8.0.tar.gz dest=/tmp copy=no
+  when: avroc_installed.stat.exists == False
+
+- name: Setup avro-c build
+  command: mkdir build
+  args:
+    chdir: /tmp/avro-c-1.8.0 
+  when: avroc_installed.stat.exists == False
+  
+- name: prepare avro-c build
+  command: cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo
+  args:
+    chdir: /tmp/avro-c-1.8.0/build
+  when: avroc_installed.stat.exists == False
+
+- name: build avro-c
+  commmand: make  
+  args:
+    chdir: /tmp/avro-c-1.8.0 
+  when: avroc_installed.stat.exists == False
+  
+- name: install avro-c build
+  commmand: sudo make install  
+  args:
+    chdir: /tmp/avro-c-1.8.0 
+  when: avroc_installed.stat.exists == False
+  
+      

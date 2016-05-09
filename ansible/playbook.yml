@@ -1,0 +1,13 @@
+- hosts: all
+  sudo: yes
+  tasks:
+    - include: tasks/jdk.yml
+    - include: tasks/postgres-9.5.yml
+    - include: tasks/avroc-deps.yml
+    - include: tasks/acro-c.yml
+    - include: tasks/librdkafka.yml
+    - include: tasks/bottledwater.yml
+    - include: tasks/confluent.yml
+    - include: tasks/docker.yml
+
+

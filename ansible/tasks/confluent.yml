@@ -1,0 +1,11 @@
+- name: Check if JDK installed
+  stat: path=/opt/confluent/
+  register: confluent_installed
+
+- name: Get confluent
+  command: curl -o /tmp/confluent-2.0.1-2.11.7.zip  http://packages.confluent.io/archive/2.0/confluent-2.0.1-2.11.7.zip
+  when: confluent.stat.exists == False
+
+- name: Explode confluent tar
+  unarchive: src=/tmp/confluent-2.0.1-2.11.7.zip dest=/opt copy=no
+  when: confluent.stat.exists == False

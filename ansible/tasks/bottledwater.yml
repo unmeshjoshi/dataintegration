@@ -1,0 +1,24 @@
+- name: Check if bottleddwater installed
+  stat: path=/usr/local/lib/libavro.so.23.0.0
+  register: bottledwater_installed
+
+- name: Get bottleddwater
+  command: git clone https://github.com/confluentinc/bottledwater-pg.git
+  args:
+    chdir: /tmp
+  when: bottledwater_installed.stat.exists == False
+
+
+- name: build bottleddwater
+  commmand: make  
+  args:
+    chdir: /tmp/bottledwater
+  when: bottledwater_installed.stat.exists == False
+  
+- name: install bottleddwater
+  commmand: sudo make install  
+  args:
+    chdir: /tmp/bottledwater
+  when: bottledwater_installed.stat.exists == False
+  
+      

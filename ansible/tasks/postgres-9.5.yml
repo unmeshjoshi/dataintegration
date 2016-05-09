@@ -1,0 +1,41 @@
+- name: ensure pgdg.list file exists
+  copy:
+    content: "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main 9.5"
+    dest: /etc/apt/sources.list.d/pgdg.list
+    force: no
+    group: sys
+    owner: root
+    mode: 0555
+
+- apt: name=postgresql-server-dev-9.5 force=yes update-cache=yes 
+
+- apt: name=libpq-dev
+
+- apt: name=postgresql-9.5
+
+- name: update /etc/postgresql/9.5/main/pg_hba.conf  for replication
+  blockinfile:
+    dest: /etc/postgresql/9.5/main/pg_hba.conf 
+    create: yes
+    owner: root
+    block: |
+      local   replication     all                 trust
+      host    replication     all  127.0.0.1/32   trust
+      host    replication     all  ::1/128        trust
+
+
+- name: update /etc/postgresql/9.5/main/postgresql.conf  for replication
+  blockinfile:
+    dest: /etc/postgresql/9.5/main/postgresql.conf 
+    create: yes
+    owner: root
+    block: |
+      wal_level = logical
+      max_wal_senders = 8
+      wal_keep_segments = 4
+      max_replication_slots = 4
+
+
+
+
+

@@ -1,0 +1,29 @@
+- name: Check if librdkafka installed
+  stat: path=/usr/local/lib/librdkafka.so
+  register: librdkafka_installed
+
+- name: Get librdkafka
+  command: git clone https://github.com/edenhill/librdkafka.git
+  args:
+    chdir: /tmp/
+  when: librdkafka_installed.stat.exists == False
+  
+- name: Prepare librdkafka build
+  command: ./configure
+  args:
+    chdir: /tmp/librdkafka
+  when: librdkafka_installed.stat.exists == False
+
+- name: build librdkafka
+  commmand: make  
+  args:
+    chdir: /tmp/librdkafka 
+  when: librdkafka_installed.stat.exists == False
+
+- name: Install librdkafka
+  commmand: sudo make install  
+  args:
+    chdir: /tmp/librdkafka
+  when: avroc_installed.stat.exists == False
+  
+      
