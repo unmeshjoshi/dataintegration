@@ -11,9 +11,7 @@
   when: avroc_installed.stat.exists == False
 
 - name: Setup avro-c build
-  command: mkdir build
-  args:
-    chdir: /tmp/avro-c-1.8.0 
+  file: path=/tmp/avro-c-1.8.0/build state=directory 
   when: avroc_installed.stat.exists == False
   
 - name: prepare avro-c build
@@ -23,15 +21,13 @@
   when: avroc_installed.stat.exists == False
 
 - name: build avro-c
-  commmand: make  
+  command: make  
   args:
-    chdir: /tmp/avro-c-1.8.0 
+    chdir: /tmp/avro-c-1.8.0/build
   when: avroc_installed.stat.exists == False
-  
+
 - name: install avro-c build
-  commmand: sudo make install  
+  command: sudo make install  
   args:
-    chdir: /tmp/avro-c-1.8.0 
+    chdir: /tmp/avro-c-1.8.0/build
   when: avroc_installed.stat.exists == False
-  
-      

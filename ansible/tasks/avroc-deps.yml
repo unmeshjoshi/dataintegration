@@ -9,6 +9,9 @@
     - pkg-config
     - cmake
 
+- name: Creates pkgconfig directory
+  file: path=/usr/local/lib/pkgconfig state=directory owner=root
+
 - name: ensure /usr/local/lib/pkgconfig/libsnappy.pc file exists
   blockinfile:
     dest: /usr/local/lib/pkgconfig/libsnappy.pc

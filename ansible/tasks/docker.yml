@@ -11,4 +11,4 @@
 
 - apt: name=linux-image-extra-3.13.0-85-generic
 
-- apt: name=docker-engine
+- apt: name=docker-engine force=yes
