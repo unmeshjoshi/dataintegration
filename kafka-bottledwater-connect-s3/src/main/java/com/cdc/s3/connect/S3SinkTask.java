@@ -50,15 +50,23 @@ public class S3SinkTask extends SinkTask {
         AwsGateway gateway = new AwsGateway();
         try {
             String content = toString(buffer);
+
             if (!StringUtils.isNullOrEmpty(content)) {
                 System.out.print("Uploading to s3");
                 System.out.println(content);
-                gateway.uploadToS3(bucketName, "dataIntegration" + System.currentTimeMillis(), content);
+                String fileName = s3FileName(buffer);
+                gateway.uploadToS3(bucketName, fileName, content);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         buffer = new ArrayList<>();
+    }
+
+    private String s3FileName(List<SinkRecord> buffer1) {
+        SinkRecord firstRecord = buffer1.get(0);
+        String fileNameSuffix = String.format("%s-%05d-%012d", firstRecord.topic(), firstRecord.kafkaPartition(), firstRecord.kafkaOffset());
+        return "dataIntegration_" + fileNameSuffix;
     }
 
     private String toString(Collection<SinkRecord> records) throws IOException {
