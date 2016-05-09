@@ -22,6 +22,6 @@ public class AwsGatewayTest {
     @Test
     public void shouldCreateS3FileNameFromPartitionAndOffset() {
         String fileNameSuffix = String.format("%s-%05d-%012d", "address", 0, 15);
-        assertEquals("", "dataIntegration_" + fileNameSuffix);
+        assertEquals("dataIntegration_address-00000-000000000015", "dataIntegration_" + fileNameSuffix);
     }
 }
