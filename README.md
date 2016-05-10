@@ -48,6 +48,7 @@ This is vagrant setup which can help running bottledwater_pg and confluent platf
  This will set postgres password to 'password' which can then be used to connect to postgresql from bottledwater.
  TODO: The setup needs to be updated to create a replication user to be used by bottledwater.
 11. In terminal for postgresql, connect to postgres, create bottledwater extension and test schema.
+
 ```
 12. psql -U postgres -W
 13. create extension bottledwater;
@@ -61,8 +62,8 @@ This is vagrant setup which can help running bottledwater_pg and confluent platf
     );
 ```
     
-    This will create a table to used to add data to be connsumed by bottledwater.
-    Note that this schema does not have timestamp fields. Timestamp are converted to union types which are not supported by kafka-connect's avro converter yet.
+This will create a table to used to add data to be connsumed by bottledwater.
+Note that this schema does not have timestamp fields. Timestamp are converted to union types which are not supported by kafka-connect's avro converter yet.
 
  14. Run zookeeper as following 
     - sudo docker run -d --name zookeeper -p 2181:2181 confluent/zookeeper
