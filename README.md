@@ -32,7 +32,7 @@ This is vagrant setup which can help running bottledwater_pg and confluent platf
     * Downloads http://packages.confluent.io/archive/2.0/confluent-2.0.1-2.11.7.zip and unzips it in /opt/confluent-2.0.1
 6. This completes the basic setup required to execute and test bottledwater.
 7. After initial setup, run 'vagrant reload' to restart the vm. (This is needed as postgres is not picking the libraries in /usr/local/lib'
-8. Open 6 tabs on terminal. These are needed to run followin
+8. Open 6 tabs on terminal. These are needed to run following
     - kafka worker1 and worker2
     - postgres
     - bottledwater
@@ -61,7 +61,7 @@ This is vagrant setup which can help running bottledwater_pg and confluent platf
     Note that this schema does not have timestamp fields. Timestamp are converted to union types which are not supported by kafka-connect's avro converter yet.
 
  14. Run zookeeper as following 
-    - docker run -d --name zookeeper -p 2181:2181 confluent/zookeeper
+    - sudo docker run -d --name zookeeper -p 2181:2181 confluent/zookeeper
     
  15. In the terminal opened for kafka brokers run following command
     - /opt/confluent-2.0.1/bin/kafka-server-start /vagrant/config/server1.properties
