@@ -9,3 +9,6 @@
 - name: Explode confluent tar
   unarchive: src=/tmp/confluent-2.0.1-2.11.7.zip dest=/opt copy=no
   when: confluent_installed.stat.exists == False
+
+- name: give permissions on confluent directory
+  file: path=/opt/confluent-2.0.1 state=touch mode=777
