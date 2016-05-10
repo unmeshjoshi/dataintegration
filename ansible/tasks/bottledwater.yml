@@ -1,5 +1,5 @@
 - name: Check if bottleddwater installed
-  stat: path=/usr/lib/postgresql/9.5/lib/bottledwater1.so
+  stat: path=/usr/lib/postgresql/9.5/lib/bottledwater.so
   register: bottledwater_installed
 
 - name: Check if bottleddwater checked out 
