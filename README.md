@@ -1,64 +1,84 @@
-vagrant up --provision
-vagrant halt
+This is vagrant setup which can help running bottledwater_pg and confluent platform. This setup downloads and installs all the dependencies required to compile bottledwater_pg as well as connfluent platform. It also has a sample connector to read data published by bottledwater and publish it on s3.
 
-vagrant up
+## Setup instructions
+1. Install Vagrant https://www.vagrantup.com/downloads.html
+2. Install Ansible http://docs.ansible.com/ansible/intro_installation.html. Make sure you have ansible 2.0
+3. Checkout dataintegration repository.
+   git clone 
+4. cd dataintegration
+5. Run command vagrant up.
+   This will pull ubuntu/trusty64 basebox and install following set of packages
+   - jdk1.8.0_65
+   - postgresql-9.5, postgresql-server-dev-9.5, libpq-dev
+   - libsnappy-dev
+   - asciidoc
+   - g++
+   - libjansson-dev
+   - libcurl4-openssl-dev
+   - git
+   - pkg-config
+   - cmake
+   - linux-image-extra-3.13.0-85-generic
+   - apparmor
+   - docker-engine
+  All these packages are required to compile avro-c, librdkafka and bottledwater.
+  * The setup will also make neccessary changes to pg_hba.conf and postgresql.conf to allow replication.
+  * It will then 
+      * download avro-c from http://redrockdigimark.com/apachemirror/avro/avro-1.8.0/c/avro-c-1.8.0.tar.gz and build it
+      * git clone https://github.com/edenhill/librdkafka.git and build it
+      * git clone https://github.com/confluentinc/bottledwater-pg.git in /vagrant folder
+        Pulling it in /vagrant folder allows you make changes to source code if needed and build it again.
+      * It will build and install bottledwater.
+    * Downloads http://packages.confluent.io/archive/2.0/confluent-2.0.1-2.11.7.zip and unzips it in /opt/confluent-2.0.1
+6. This completes the basic setup required to execute and test bottledwater.
+7. After initial setup, run 'vagrant reload' to restart the vm. (This is needed as postgres is not picking the libraries in /usr/local/lib'
+8. Open 6 tabs on terminal. These are needed to run followin
+    - kafka worker1 and worker2
+    - postgres
+    - bottledwater
+    - schema-registry
+    - zookeeper
+    - kafka connect worker
+    - terminal to setnd http requests to connect broker
+9. In each of the tab run 'vagrant ssh' to get onto the vagrant vm.
+10. Reset postgres user password
+  - sudo -u postgres psql postgres
+  - # \password postgres
+  - Enter new password: password
+ This will set postgres password to 'password' which can then be used to connect to postgresql from bottledwater.
+ TODO: The setup needs to be updated to create a replication user to be used by bottledwater.
+11. In terminal for postgresql, connect to postgres
+12. psql -U postgres -W
+13. postgres=# CREATE TABLE address (                                                                                          postgres(#   address_id   SERIAL,
+    postgres(#   street_address text,
+    postgres(#   district     text,
+    postgres(#   city         text,
+    postgres(#   postal_code  text,
+    postgres(#   phone        text,
+    postgres(#   PRIMARY KEY  (address_id)
+    postgres(# );
+    This will create a table to used to add data to be connsumed by bottledwater.
+ 14. Run zookeeper as following 
+    - docker run -d --name zookeeper -p 2181:2181 confluent/zookeeper
+    
+ 15. In the terminal opened for kafka brokers run following command
+    - /opt/confluent-2.0.1/bin/kafka-server-start /vagrant/config/server1.properties
+     In the second terminal run following
+    - /opt/confluent-2.0.1/bin/kafka-server-start /vagrant/config/server2.properties
+    This will start two kafka brokers.
+ 16. Start schema-registry
+    - /opt/confluent-2.0.1/bin/schema-registry-start /opt/confluent-2.0.1/etc/schema-registry/schema-registry.properties
+    
+ 16. In the terminal opened for bottedwater. run following command
+    - cd /vagrant/bottledwater-pg/kafka
+    - ./bottledwater --postgres=postgres://postgres:password@localhost --broker=localhost:9093
+    Now bottledwater is all set to start publishing database changes to kafka
+  
+  17. You can start kafka consumer to see all the messaegs
+    - /opt/confluent-2.0.1/bin/kafka-avro-console-consumer --topic address --from-beginning --zookeeper localhost:2181
+  18. In the postgresql terminal, insert some data in address table.
+      
+      insert into address (street_address, district, city, postal_code, phone) values ('1 main street', 'ma', 'lexington', '211002', '781-989-9999');
 
-vagrant ssh
-
-sudo docker run -d --name zookeeper -p 2181:2181 confluent/zookeeper
-
-sudo -u postgres psql
-
-postgres> create extension bottledwater;
-postgres> \password
-password
-password
-
-cd /vagrant/kafka-bottledwater-connect-s3
-./gradlew fatJar
-
-cd /opt/confluent-2.0.1/bin
-
-open 6 tabs.
-
-sudo docker start zookeeper
-
-./kafka-server-start.sh /vagrant/config/server1.properties //9092
-./kafka-server-start.sh /vagrant/config/server2.properties //9093
-
-./schema-registry-start.sh ../etc/config/schema-registry.properties
-
-cd /tmp/bottledwater-pg/kafka
-./bottledwater --postgres=postgres://postgres:password@localhost --broker=localhost:9093
-
-CREATE TABLE address (                                                                                                                                               
-  address_id   SERIAL,
-  street_address text,
-  district     text,
-  city         text,
-  postal_code  text,
-  phone        text,
-  PRIMARY KEY  (address_id)
-);
-
-
-insert into address (street_address, district, city, postal_code, phone) values ('1 main street', 'ma', 'lexington', '211002', '781-989-9999');
-insert into address (street_address, district, city, postal_code, phone) values ('2 main street', 'ma', 'lexington', '211002', '781-989-9999');
-insert into address (street_address, district, city, postal_code, phone) values ('3 main street', 'ma', 'lexington', '211002', '781-989-9999');
-insert into address (street_address, district, city, postal_code, phone) values ('4 main street', 'ma', 'lexington', '211002', '781-989-9999');
-insert into address (street_address, district, city, postal_code, phone) values ('5 main street', 'ma', 'lexington', '211002', '781-989-9999');
-insert into address (street_address, district, city, postal_code, phone) values ('6 main street', 'ma', 'lexington', '211002', '781-989-9999');
-insert into address (street_address, district, city, postal_code, phone) values ('7 main street', 'ma', 'lexington', '211002', '781-989-9999');
-insert into address (street_address, district, city, postal_code, phone) values ('8 main street', 'ma', 'lexington', '211002', '781-989-9999');
-insert into address (street_address, district, city, postal_code, phone) values ('9 main street', 'ma', 'lexington', '211002', '781-989-9999');
-
-
-export CLASSPATH=/vagrant/kafka-bottledwater-connect-s3/build/libs/<SOMENAME>-all.jar
-./connect-distributed.sh /vagrant/config/worker1.properties
-
-curl -X POST -H "Content-Type: application/json" --data '{"name": "bottledwater-s3sink", "config": {"connector.class":"com.cdc.connect.S3SinkConnector", "tasks.max":"1", "topics":"address", "s3_bucket_name":"dataintegration"  }}' http://localhost:7999/connectors
-
-curl -X DELETE http://localhost:7999/connectors/bottledwater-s3sink
-
-
-
+  You should see records in console consumer window.  
+      {"address_id":{"int":1},"street_address":{"string":"1 main street"},"district":{"string":"ma"},"city":{"string":"lexington"},"postal_code":{"string":"211002"},"phone":{"string":"781-989-9999"}}
