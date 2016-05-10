@@ -65,10 +65,6 @@ test {
     }
 }
 
-javadoc {
-    include "**/org/wushujames/connect/*"
-}
-
 artifacts {
     archives testJar
 }

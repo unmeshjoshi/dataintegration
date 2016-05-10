@@ -37,10 +37,4 @@
 
 - apt: name=python-psycopg2
 
-- name: create postgres user with replication access
-  postgresql_user: name=bottledwater_user password=password role_attr_flags=CREATEDB,REPLICATION,LOGIN
-
-
-
-
 
