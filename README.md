@@ -85,15 +85,17 @@ This is vagrant setup which can help running bottledwater_pg and confluent platf
   You should see records in console consumer window.  
       {"address_id":{"int":1},"street_address":{"string":"1 main street"},"district":{"string":"ma"},"city":{"string":"lexington"},"postal_code":{"string":"211002"},"phone":{"string":"781-989-9999"}}
   
- 19. The repo also includes a sample Sink connector to read avro data published by bottledwater. To try it
- 20. cd /vagrant/kafka-bottledwater-connect-s3
- 21. Run command './gradlew fatJar'
- 22. after the jar is built, open one more terminal to run connect worker.
- 23. vagrant ssh
- 24. export CLASSPATH=/vagrant/kafka-bottledwater-connect-s3/build/libs/kafka-bottledwater-connect-s3-all.jar
- 25.  /opt/confluent-2.0.1/bin/connect-distributed /vagrant/config/worker1.properties
- 26.  Now, setup the connector with REST request 
- 27.  curl -X POST -H "Content-Type: application/json" --data '{"name": "bottledwater-s3sink", "config":    {"connector.class":"com.cdc.s3.connect.S3SinkConnector", "tasks.max":"1", "topics":"address", "s3_bucket_name":"dataintegration"  }}' http://localhost:7999/connectors
- 28.  This will setup the connector and after every 5 records will try to push records to s3. 
- 29.  If you have s3 bucket, setup your s3 credentials in
- 30.  /home/vagrant/.aws/credentials file.
+ ## Test kafka connector
+ 
+ 1. The repo also includes a sample Sink connector to read avro data published by bottledwater. To try it
+ 2. cd /vagrant/kafka-bottledwater-connect-s3
+ 3. Run command './gradlew fatJar'
+ 4. after the jar is built, open one more terminal to run connect worker.
+ 5. vagrant ssh
+ 6. export CLASSPATH=/vagrant/kafka-bottledwater-connect-s3/build/libs/kafka-bottledwater-connect-s3-all.jar
+ 7.  /opt/confluent-2.0.1/bin/connect-distributed /vagrant/config/worker1.properties
+ 8.  Now, setup the connector with REST request 
+ 9.  curl -X POST -H "Content-Type: application/json" --data '{"name": "bottledwater-s3sink", "config":    {"connector.class":"com.cdc.s3.connect.S3SinkConnector", "tasks.max":"1", "topics":"address", "s3_bucket_name":"dataintegration"  }}' http://localhost:7999/connectors
+ 10.  This will setup the connector and after every 5 records will try to push records to s3. 
+ 11.  If you have s3 bucket, setup your s3 credentials in
+ 12.  /home/vagrant/.aws/credentials file.
