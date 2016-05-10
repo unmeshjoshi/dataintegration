@@ -47,16 +47,20 @@ This is vagrant setup which can help running bottledwater_pg and confluent platf
   - Enter new password: password
  This will set postgres password to 'password' which can then be used to connect to postgresql from bottledwater.
  TODO: The setup needs to be updated to create a replication user to be used by bottledwater.
-11. In terminal for postgresql, connect to postgres
+11. In terminal for postgresql, connect to postgres, create bottledwater extension and test schema.
+```
 12. psql -U postgres -W
-13. postgres=# CREATE TABLE address (                                                                                          postgres(#   address_id   SERIAL,
-    postgres(#   street_address text,
-    postgres(#   district     text,
-    postgres(#   city         text,
-    postgres(#   postal_code  text,
-    postgres(#   phone        text,
-    postgres(#   PRIMARY KEY  (address_id)
-    postgres(# );
+13. create extension bottledwater;
+13. CREATE TABLE address (                                                                                                          address_id   SERIAL,
+         street_address text,
+         district     text,
+         city         text,
+         postal_code  text,
+         phone        text,
+         PRIMARY KEY  (address_id)
+    );
+```
+    
     This will create a table to used to add data to be connsumed by bottledwater.
     Note that this schema does not have timestamp fields. Timestamp are converted to union types which are not supported by kafka-connect's avro converter yet.
 
