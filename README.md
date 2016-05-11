@@ -28,6 +28,7 @@ This is vagrant setup which can help running bottledwater_pg and confluent platf
       * git clone https://github.com/edenhill/librdkafka.git and build it
       * git clone https://github.com/confluentinc/bottledwater-pg.git in /vagrant folder
         Pulling it in /vagrant folder allows you make changes to source code if needed and build it again.
+        After successful build and deploy. The setup will create bottledwater extension in database.
       * It will build and install bottledwater.
     * Downloads http://packages.confluent.io/archive/2.0/confluent-2.0.1-2.11.7.zip and unzips it in /opt/confluent-2.0.1
 6. This completes the basic setup required to execute and test bottledwater.
@@ -45,8 +46,7 @@ This is vagrant setup which can help running bottledwater_pg and confluent platf
 
 ```
 11. psql -U postgres
-12. create extension bottledwater;
-13. CREATE TABLE address (                                                                                                          address_id   SERIAL,
+12. CREATE TABLE address (                                                                                                          address_id   SERIAL,
          street_address text,
          district     text,
          city         text,
@@ -59,15 +59,15 @@ This is vagrant setup which can help running bottledwater_pg and confluent platf
 This will create a table to used to add data to be connsumed by bottledwater.
 Note that this schema does not have timestamp fields. Timestamp are converted to union types which are not supported by kafka-connect's avro converter yet.
 
- 14. Run zookeeper as following 
+ 13. Run zookeeper as following 
     - sudo docker run -d --name zookeeper -p 2181:2181 confluent/zookeeper
     
- 15. In the terminal opened for kafka brokers run following command
+ 14. In the terminal opened for kafka brokers run following command
     - /opt/confluent-2.0.1/bin/kafka-server-start /vagrant/config/server1.properties
      In the second terminal run following
     - /opt/confluent-2.0.1/bin/kafka-server-start /vagrant/config/server2.properties
     This will start two kafka brokers.
- 16. Start schema-registry
+ 15. Start schema-registry
     - /opt/confluent-2.0.1/bin/schema-registry-start /opt/confluent-2.0.1/etc/schema-registry/schema-registry.properties
     
  16. In the terminal opened for bottedwater. run following command
