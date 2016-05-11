@@ -41,17 +41,11 @@ This is vagrant setup which can help running bottledwater_pg and confluent platf
     - kafka connect worker
     - terminal to setnd http requests to connect broker
 9. In each of the tab run 'vagrant ssh' to get onto the vagrant vm.
-10. Reset postgres user password
-  - sudo -u postgres psql postgres
-  - # \password postgres
-  - Enter new password: password
- This will set postgres password to 'password' which can then be used to connect to postgresql from bottledwater.
- TODO: The setup needs to be updated to create a replication user to be used by bottledwater.
-11. In terminal for postgresql, connect to postgres, create bottledwater extension and test schema.
+10. In terminal for postgresql, connect to postgres, create bottledwater extension and test schema.
 
 ```
-12. psql -U postgres -W
-13. create extension bottledwater;
+11. psql -U postgres
+12. create extension bottledwater;
 13. CREATE TABLE address (                                                                                                          address_id   SERIAL,
          street_address text,
          district     text,
