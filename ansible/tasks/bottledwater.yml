@@ -24,3 +24,7 @@
   args:
     chdir: /vagrant/bottledwater-pg
   when: bottledwater_installed.stat.exists == False
+
+- name: Create bottledwater extension
+  command: psql -U postgres -c 'create extension bottledwater;'
+  when: bottledwater_checkedout.stat.exists == False

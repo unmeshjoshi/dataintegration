@@ -14,14 +14,7 @@
 - apt: name=postgresql-9.5 force=yes 
 
 - name: update /etc/postgresql/9.5/main/pg_hba.conf  for replication
-  blockinfile:
-    dest: /etc/postgresql/9.5/main/pg_hba.conf 
-    create: yes
-    owner: root
-    block: |
-      local   replication     all                 trust
-      host    replication     all  127.0.0.1/32   trust
-      host    replication     all  ::1/128        trust
+  copy: src=pg_hba.conf dest=/etc/postgresql/9.5/main/pg_hba.conf force=yes
 
 
 - name: update /etc/postgresql/9.5/main/postgresql.conf  for replication
@@ -35,6 +28,4 @@
       wal_keep_segments = 4
       max_replication_slots = 4
 
-- apt: name=python-psycopg2
-
-
+- service: name=postgresql state=restarted
