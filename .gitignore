@@ -4,3 +4,6 @@ build
 .idea
 .vagrant
 bottledwater-pg
+logs
+*.log
+1

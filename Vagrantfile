@@ -14,6 +14,13 @@ Vagrant.configure(2) do |config|
   # boxes at https://atlas.hashicorp.com/search.
   config.vm.box = "ubuntu/trusty64"
 
+   config.vm.network "forwarded_port", guest: 9092, host: 9092
+   config.vm.network "forwarded_port", guest:9093, host:9093
+   config.vm.network "forwarded_port", guest:9094, host:9094
+   config.vm.network "forwarded_port", guest:7999, host:7999
+   config.vm.network "forwarded_port", guest:8081, host:8081
+   config.vm.network "forwarded_port", guest:4000, host:4000
+   
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.
@@ -26,7 +33,7 @@ Vagrant.configure(2) do |config|
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
-  # config.vm.network "private_network", ip: "192.168.33.10"
+  config.vm.network "private_network", ip: "192.168.33.10"
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
@@ -49,6 +56,7 @@ Vagrant.configure(2) do |config|
   #
   #   # Customize the amount of memory on the VM:
      vb.memory = "4048"
+      vb.cpus = 2 
    end
 
    config.vm.provision "ansible" do |ansible|

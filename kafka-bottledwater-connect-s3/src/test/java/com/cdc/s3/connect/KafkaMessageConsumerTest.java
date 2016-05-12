@@ -199,13 +199,13 @@ public class KafkaMessageConsumerTest {
         return returnMetaData;
     }
 
-    private void printGenericRecord(byte[] is) throws IOException {
+    private void printGenericRecord(byte[] is, String topic) throws IOException {
 
         Map<String, String> config = new HashMap<>();
-        config.put("schema.registry.url", "http://localhost:8081");
+        config.put("schema.registry.url", "http://192.168.33.10:8081");
         AvroConverter converter = new AvroConverter();
         converter.configure(config, false);
-        SchemaAndValue schemaAndValue = converter.toConnectData("location3", is);
+        SchemaAndValue schemaAndValue = converter.toConnectData(topic, is);
         Object value = schemaAndValue.value();
         System.out.println("value = " + new StructWrapper().asCsv((Struct) value));
 //
@@ -221,7 +221,7 @@ public class KafkaMessageConsumerTest {
     public void shouldReadBottledWaterMessagesFromKafka() {
         KafkaMessageConsumerTest example = new KafkaMessageConsumerTest();
         long maxReads = 10;
-        String topic = "location3";
+        String topic = "test_address6";
         int partition = 0;
         List<String> seeds = new ArrayList<String>();
         seeds.add("localhost");
@@ -229,7 +229,7 @@ public class KafkaMessageConsumerTest {
         try {
             List<byte[]> messages = example.run(maxReads, topic, partition, seeds, port);
             for (byte[] message : messages) {
-                printGenericRecord(message);
+                printGenericRecord(message, topic);
             }
         } catch (Exception e) {
             System.out.println("Oops:" + e);
