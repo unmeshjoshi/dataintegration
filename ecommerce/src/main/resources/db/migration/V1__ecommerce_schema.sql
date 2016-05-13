@@ -92,7 +92,7 @@ CREATE TABLE products (
   productVendor varchar(50) NOT NULL,
   productDescription text NOT NULL,
   quantityInStock INT NOT NULL,
-  buyPrice decimal NOT NULL,
-  MSRP decimal NOT NULL,
+  buyPrice varchar(15) NOT NULL,
+  MSRP varchar(15) NOT NULL,
   PRIMARY KEY (productCode)
 );

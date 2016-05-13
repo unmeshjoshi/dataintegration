@@ -29,3 +29,5 @@
       max_replication_slots = 4
 
 - service: name=postgresql state=restarted
+
+- postgresql_db: name=ecommerce

@@ -20,10 +20,9 @@ plugins {
 }
 
 flyway {
-    url = 'jdbc:postgresql://localhost/?'
+    url = 'jdbc:postgresql://localhost/ecommerce'
     user = 'postgres'
     password = 'password'
-    schemas = ['ecommerce']
 }
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
