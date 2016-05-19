@@ -21,6 +21,8 @@ This is vagrant setup which can help running bottledwater_pg and confluent platf
    - linux-image-extra-3.13.0-85-generic
    - apparmor
    - docker-engine
+  This will also create database called 'ecommerce' in Postgres. This will then be used to setup ecommerce schema and seed data.
+
   All these packages are required to compile avro-c, librdkafka and bottledwater.
   * The setup will also make neccessary changes to pg_hba.conf and postgresql.conf to allow replication.
   * It will then 
@@ -33,7 +35,13 @@ This is vagrant setup which can help running bottledwater_pg and confluent platf
     * Downloads http://packages.confluent.io/archive/2.0/confluent-2.0.1-2.11.7.zip and unzips it in /opt/confluent-2.0.1
 6. This completes the basic setup required to execute and test bottledwater.
 7. After initial setup, run 'vagrant reload' to restart the vm. (This is needed as postgres is not picking the libraries in /usr/local/lib'
-8. Open 6 tabs on terminal. These are needed to run following
+# Setting up ecommerce test schema and seed data.
+8. This setup has Postgres version of http://www.mysqltutorial.org/mysql-sample-database.aspx. 
+9. cd /vagrant/ecommerce
+10. Run command './gradlew flywayMigrate -i --stacktrace'
+This will create ecommerce schema and insert seed data to be used by connectors.
+
+9. Open 6 tabs on terminal. These are needed to run following
     - kafka worker1 and worker2
     - postgres
     - bottledwater
@@ -41,43 +49,29 @@ This is vagrant setup which can help running bottledwater_pg and confluent platf
     - zookeeper
     - kafka connect worker
     - terminal to setnd http requests to connect broker
-9. In each of the tab run 'vagrant ssh' to get onto the vagrant vm.
-10. In terminal for postgresql, connect to postgres, create bottledwater extension and test schema.
+10. In each of the tab run 'vagrant ssh' to get onto the vagrant vm.
 
-```
-11. psql -U postgres
-12. CREATE TABLE address (                                                                                                          address_id   SERIAL,
-         street_address text,
-         district     text,
-         city         text,
-         postal_code  text,
-         phone        text,
-         PRIMARY KEY  (address_id)
-    );
-```
-    
 This will create a table to used to add data to be connsumed by bottledwater.
 Note that this schema does not have timestamp fields. Timestamp are converted to union types which are not supported by kafka-connect's avro converter yet.
 
- 13. Run zookeeper as following 
+11. Run zookeeper as following 
     - sudo docker run -d --name zookeeper -p 2181:2181 confluent/zookeeper
     
- 14. In the terminal opened for kafka brokers run following command
+14. In the terminal opened for kafka brokers run following command
     - /opt/confluent-2.0.1/bin/kafka-server-start /vagrant/config/server1.properties
      In the second terminal run following
     - /opt/confluent-2.0.1/bin/kafka-server-start /vagrant/config/server2.properties
     This will start two kafka brokers.
- 15. Start schema-registry
+15. Start schema-registry
     - /opt/confluent-2.0.1/bin/schema-registry-start /opt/confluent-2.0.1/etc/schema-registry/schema-registry.properties
     
- 16. In the terminal opened for bottedwater. run following command
-    - cd /vagrant/bottledwater-pg/kafka
+16. In the terminal opened for bottedwater. run following command    - cd /vagrant/bottledwater-pg/kafka
     - ./bottledwater --postgres=postgres://postgres:password@localhost --broker=localhost:9093
     Now bottledwater is all set to start publishing database changes to kafka
   
-  17. You can start kafka consumer to see all the messaegs
+ 17. You can start kafka consumer to see all the messaegs
     - /opt/confluent-2.0.1/bin/kafka-avro-console-consumer --topic address --from-beginning --zookeeper localhost:2181
-  18. In the postgresql terminal, insert some data in address table.
+ 18. In the postgresql terminal, insert some data in address table.
       
       insert into address (street_address, district, city, postal_code, phone) values ('1 main street', 'ma', 'lexington', '211002', '781-989-9999');
 
