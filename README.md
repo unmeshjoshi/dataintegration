@@ -1,4 +1,4 @@
-This is vagrant setup which can help running bottledwater_pg and confluent platform. This setup downloads and installs all the dependencies required to compile bottledwater_pg as well as connfluent platform. It also has a sample connector to read data published by bottledwater and publish it on s3.
+This is vagrant setup which can help running bottledwater_pg and confluent platform. This setup downloads and installs all the dependencies required to compile bottledwater_pg as well as connfluent platform. It also has a sample connector to read data published by bottledwater and publish it on s3. The setup also creates a sample ecommerce schema with seed data to help experiment with kafka connect.
 
 ## Setup instructions
 1. Install Vagrant https://www.vagrantup.com/downloads.html
