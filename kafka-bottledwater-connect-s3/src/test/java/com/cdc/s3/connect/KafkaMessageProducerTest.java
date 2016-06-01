@@ -2,9 +2,7 @@ package com.cdc.s3.connect;
 
 
 import kafka.admin.AdminUtils;
-import kafka.javaapi.producer.Producer;
-import kafka.producer.KeyedMessage;
-import kafka.producer.ProducerConfig;
+import kafka.utils.ZKStringSerializer$;
 import kafka.utils.ZkUtils;
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.ZkConnection;
@@ -17,8 +15,9 @@ import org.apache.avro.io.DatumWriter;
 import org.apache.avro.io.EncoderFactory;
 import org.apache.avro.specific.SpecificDatumWriter;
 import org.apache.commons.codec.DecoderException;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import scala.collection.Seq;
-import kafka.utils.ZKStringSerializer$;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -51,7 +50,7 @@ public class KafkaMessageProducerTest {
 
         int partitions = 2;
         int replication = 2;
-        AdminUtils.createTopic(zkUtils, topic, partitions, replication, new Properties());
+        AdminUtils.createTopic(zkUtils, topic, partitions, replication, new Properties(), null);
 
         zkClient.close();
     }
@@ -62,11 +61,12 @@ public class KafkaMessageProducerTest {
         createTopic(topic);
 
         Properties props = new Properties();
-        props.put("metadata.broker.list", "192.168.33.10:9092");
-        props.put("serializer.class", "kafka.serializer.DefaultEncoder");
+        props.put("bootstrap.servers", "192.168.33.10:9092");
+        props.put("key.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
+        props.put("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
         props.put("request.required.acks", "1");
-        ProducerConfig config = new ProducerConfig(props);
-        Producer<String, byte[]> producer = new Producer<String, byte[]>(config);
+
+        KafkaProducer<String, byte[]> producer = new KafkaProducer<String, byte[]>(props);
 
         GenericData.Record value = new GenericData.Record(schema);
         value.put("address", "1 city center");
@@ -87,7 +87,7 @@ public class KafkaMessageProducerTest {
         System.out.println("Sending message in bytes : " + serializedBytes);
         //String serializedHex = Hex.encodeHexString(serializedBytes);
         //System.out.println("Serialized Hex String : " + serializedHex);
-        KeyedMessage<String, byte[]> message = new KeyedMessage<String, byte[]>(topic, serializedBytes);
+        ProducerRecord<String, byte[]> message = new ProducerRecord<String, byte[]>(topic, serializedBytes);
         producer.send(message);
         producer.close();
 

@@ -1,6 +1,7 @@
 package com.cdc.s3.connect;
 
 import com.amazonaws.util.StringUtils;
+import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.common.utils.AppInfoParser;
 import org.apache.kafka.connect.connector.Task;
 import org.apache.kafka.connect.sink.SinkConnector;
@@ -47,6 +48,11 @@ public class S3SinkConnector extends SinkConnector {
     @Override
     public void stop() {
 
+    }
+
+    @Override
+    public ConfigDef config() {
+        return null;
     }
 
 }
