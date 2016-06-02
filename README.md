@@ -41,37 +41,27 @@ This is vagrant setup which can help running bottledwater_pg and confluent platf
 10. Run command './gradlew flywayMigrate -i --stacktrace'
 This will create ecommerce schema and insert seed data to be used by connectors.
 
-9. Open 6 tabs on terminal. These are needed to run following
-    - kafka worker1 and worker2
+9. Open 4 tabs on terminal. These are needed to run following
+    - kafka worker1, schema-registry, zookeeper
     - postgres
     - bottledwater
-    - schema-registry
-    - zookeeper
-    - kafka connect worker
     - terminal to setnd http requests to connect broker
 10. In each of the tab run 'vagrant ssh' to get onto the vagrant vm.
 
 This will create a table to used to add data to be connsumed by bottledwater.
 Note that this schema does not have timestamp fields. Timestamp are converted to union types which are not supported by kafka-connect's avro converter yet.
 
-11. Run zookeeper as following 
-    - sudo docker run -d --name zookeeper -p 2181:2181 confluent/zookeeper
-    
-14. In the terminal opened for kafka brokers run following command
-    - /opt/confluent-2.0.1/bin/kafka-server-start /vagrant/config/server1.properties
-     In the second terminal run following
-    - /opt/confluent-2.0.1/bin/kafka-server-start /vagrant/config/server2.properties
-    This will start two kafka brokers.
-15. Start schema-registry
-    - /opt/confluent-2.0.1/bin/schema-registry-start /opt/confluent-2.0.1/etc/schema-registry/schema-registry.properties
-    
-16. In the terminal opened for bottedwater. run following command    - cd /vagrant/bottledwater-pg/kafka
+11. cd /vagrant
+    run ./startAll.sh
+   This will start zookeeper, kakfa server1, server2 and  server3, and schema-registry.
+
+12. In the terminal opened for bottedwater. run following command    - cd /vagrant/bottledwater-pg/kafka
     - ./bottledwater --postgres=postgres://postgres:password@localhost --broker=localhost:9093
     Now bottledwater is all set to start publishing database changes to kafka
   
- 17. You can start kafka consumer to see all the messaegs
+ 13. You can start kafka consumer to see all the messaegs
     - /opt/confluent-2.0.1/bin/kafka-avro-console-consumer --topic address --from-beginning --zookeeper localhost:2181
- 18. In the postgresql terminal, insert some data in address table.
+ 14. In the postgresql terminal, insert some data in address table.
       
       insert into address (street_address, district, city, postal_code, phone) values ('1 main street', 'ma', 'lexington', '211002', '781-989-9999');
 
