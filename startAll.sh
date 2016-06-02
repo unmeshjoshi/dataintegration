@@ -16,8 +16,9 @@ sleep $STEP #wait till kafka brokers start
  
 /opt/confluent-3.0.0/bin/schema-registry-start /opt/confluent-3.0.0/etc/schema-registry/schema-registry.properties 2>&1 > schema-registry.log &
 
+/opt/confluent-3.0.0/bin/connect-distributed /vagrant/config/worker1.properties 2>&1 > worker1.log &
 
 sudo docker logs -f zookeeper > zookeeper.log 2>&1 > zookeeper.log &
 
-tail -f server1.log server2.log server3.log zookeeper.log schema-registry.log 
+tail -f server1.log server2.log server3.log zookeeper.log schema-registry.log worker1.log
 

@@ -34,6 +34,7 @@ repositories {
 dependencies {
     compile "org.apache.kafka:connect-api:0.10.0.0-cp1"
     compile "org.apache.kafka:kafka_2.11:0.10.0.0-cp1"
+    compile "org.apache.kafka:kafka-streams:0.10.0.0-cp1"
     compile "org.slf4j:slf4j-api:1.7.6"
     compile "org.apache.avro:avro:1.7.7"
     compile 'com.amazonaws:aws-java-sdk-s3:1.10.8'
