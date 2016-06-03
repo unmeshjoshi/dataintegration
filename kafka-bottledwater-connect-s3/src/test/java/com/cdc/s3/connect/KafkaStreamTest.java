@@ -1,5 +1,8 @@
 package com.cdc.s3.connect;
 
+import org.apache.avro.file.DataFileStream;
+import org.apache.avro.generic.GenericDatumReader;
+import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
@@ -8,6 +11,8 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KStreamBuilder;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Properties;
 
 public class KafkaStreamTest {
@@ -36,10 +41,8 @@ public class KafkaStreamTest {
 
         KStream<byte[], byte[]> records = builder.stream(stringSerde, stringSerde, "location");
 
-        KStream<byte[], byte[]> wordCounts = records
-                .map((key, word) -> new KeyValue<>(word, word));
+        getStreams(records);
 
-        wordCounts.writeAsText("/home/unmesh/test.txt", );
 
         // Now that we have finished the definition of the processing topology we can actually run
         // it via `start()`.  The Streams application as a whole can be launched just like any
@@ -47,4 +50,35 @@ public class KafkaStreamTest {
         KafkaStreams streams = new KafkaStreams(builder, streamsConfiguration);
         streams.start();
     }
+
+    private static KStream<String, String> getStreams(KStream<byte[], byte[]> records) {
+        KStream<String, String> map = records
+                .map((key, value) -> {
+                    String s = asString(value);
+                    String s1 = asString(value);
+                    return new KeyValue<>(s, s1);
+                });
+
+        return map;
+    }
+
+    private static String asString(byte[] value) {
+        GenericDatumReader dr = new GenericDatumReader();
+        DataFileStream reader = null;
+        try {
+            reader = new DataFileStream(new ByteArrayInputStream(value), dr);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        StringBuilder sb = new StringBuilder();
+        for (Object o : reader) {
+            GenericRecord record = (GenericRecord) o;
+            String csv = new GenericRecordWrapper().asCsv(record);
+            sb.append(csv);
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+
+
 }

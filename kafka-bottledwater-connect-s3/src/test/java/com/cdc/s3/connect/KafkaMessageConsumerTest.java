@@ -220,8 +220,8 @@ public class KafkaMessageConsumerTest {
     @Test
     public void shouldReadBottledWaterMessagesFromKafka() {
         KafkaMessageConsumerTest example = new KafkaMessageConsumerTest();
-        long maxReads = 10;
-        String topic = "WordsWithCountsTopic";
+        long maxReads = 2;
+        String topic = "location";
         int partition = 0;
         List<String> seeds = new ArrayList<String>();
         seeds.add("localhost");

@@ -8,12 +8,11 @@ import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.ZkConnection;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
+import org.apache.avro.file.DataFileWriter;
 import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.generic.GenericRecord;
-import org.apache.avro.io.BinaryEncoder;
 import org.apache.avro.io.DatumWriter;
-import org.apache.avro.io.EncoderFactory;
-import org.apache.avro.specific.SpecificDatumWriter;
 import org.apache.commons.codec.DecoderException;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -22,6 +21,7 @@ import scala.collection.Seq;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.Random;
 
 public class KafkaMessageProducerTest {
 
@@ -55,6 +55,7 @@ public class KafkaMessageProducerTest {
         zkClient.close();
     }
 
+    private Random random = new Random(1000);
     void producer(Schema schema) throws IOException {
 
         String topic = "location";
@@ -68,20 +69,20 @@ public class KafkaMessageProducerTest {
 
         KafkaProducer<String, byte[]> producer = new KafkaProducer<String, byte[]>(props);
 
+
         GenericData.Record value = new GenericData.Record(schema);
-        value.put("address", "1 city center");
+        value.put("address", random.nextInt() + " city center");
         value.put("address1", "main street");
         value.put("city", "lexington");
         value.put("state", "ma");
 
-        System.out.println("Original Message : "+ value);
+        System.out.println("Original Message : " + value);
         //Step3 : Serialize the object to a bytearray
-        DatumWriter<GenericRecord> writer = new SpecificDatumWriter<GenericRecord>(schema);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        BinaryEncoder encoder = EncoderFactory.get().binaryEncoder(out, null);
-        writer.write(value, encoder);
-        encoder.flush();
-        out.close();
+        DatumWriter<GenericRecord> writer = new GenericDatumWriter<GenericRecord>();
+        DataFileWriter<GenericRecord> dataFileWriter = new DataFileWriter<GenericRecord>(writer).create(schema, out);
+        dataFileWriter.append(value);
+        dataFileWriter.flush();
 
         byte[] serializedBytes = out.toByteArray();
         System.out.println("Sending message in bytes : " + serializedBytes);
@@ -95,15 +96,17 @@ public class KafkaMessageProducerTest {
 
 
     public static void main(String[] args) throws IOException, DecoderException {
-        KafkaMessageProducerTest test = new KafkaMessageProducerTest();
-        Schema schema = SchemaBuilder
-                .record("address")
-                .fields()
-                .name("address").type().stringType().noDefault()
-                .name("address1").type().stringType().noDefault()
-                .name("city").type().stringType().noDefault()
-                .name("state").type().stringType().noDefault()
-                .endRecord();
-        test.producer(schema);
+        while (true) {
+            KafkaMessageProducerTest test = new KafkaMessageProducerTest();
+            Schema schema = SchemaBuilder
+                    .record("address")
+                    .fields()
+                    .name("address").type().stringType().noDefault()
+                    .name("address1").type().stringType().noDefault()
+                    .name("city").type().stringType().noDefault()
+                    .name("state").type().stringType().noDefault()
+                    .endRecord();
+            test.producer(schema);
+        }
     }
 }
